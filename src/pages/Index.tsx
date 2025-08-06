@@ -19,7 +19,8 @@ const Index = () => {
       <div className="container mx-auto px-4 py-16" id="colleges">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-foreground mb-4">
-            Discover my GirlFriend for Ravi Panchal
+            Discover Your Perfect College Match
+            
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Browse through hundreds of Medical and Engineering colleges with real-time cutoff data, 
