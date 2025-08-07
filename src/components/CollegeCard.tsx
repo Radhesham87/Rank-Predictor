@@ -9,7 +9,7 @@ interface CollegeCardProps {
     name: string;
     location: string;
     state: string;
-    type: "Medical" | "Engineering";
+    type: "Medical" | "Engineering" | "Homoeopathy";
     establishedYear: number;
     rating: number;
     fees: string;
