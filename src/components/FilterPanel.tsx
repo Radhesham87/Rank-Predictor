@@ -1,7 +1,13 @@
 import { Filter, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,13 +20,19 @@ interface FilterPanelProps {
 
 export const FilterPanel = ({ isOpen, onToggle }: FilterPanelProps) => {
   const states = [
-    "Andhra Pradesh", "Karnataka", "Tamil Nadu", "Maharashtra", "Delhi", 
-    "Uttar Pradesh", "West Bengal", "Gujarat", "Rajasthan", "Haryana"
+    "Andhra Pradesh",
+    "Karnataka",
+    "Tamil Nadu",
+    "Maharashtra",
+    "Delhi",
+    "Uttar Pradesh",
+    "West Bengal",
+    "Gujarat",
+    "Rajasthan",
+    "Haryana",
   ];
 
-  const degrees = [
-    "MBBS", "BAMS", "BHMS", "BDS"
-  ];
+  const degrees = ["MBBS", "BAMS", "BHMS", "BDS"];
 
   const quotas = ["General", "OBC", "SC", "ST", "EWS"];
 
@@ -46,7 +58,7 @@ export const FilterPanel = ({ isOpen, onToggle }: FilterPanelProps) => {
             <X className="w-4 h-4" />
           </Button>
         </CardHeader>
-        
+
         <CardContent className="space-y-6">
           {/* College Type */}
           <div>
@@ -126,6 +138,29 @@ export const FilterPanel = ({ isOpen, onToggle }: FilterPanelProps) => {
               <Input placeholder="Max rank" type="number" />
             </div>
           </div>
+
+          <Separator />
+
+          {/* NEET Input */}
+          <div>
+            <Label className="text-sm font-medium mb-3 block">NEET Input</Label>
+            <div className="space-y-2">
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select NEET Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="mark">NEET Mark</SelectItem>
+                  <SelectItem value="rank">NEET Rank</SelectItem>
+                  <SelectItem value="sml">SML</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Input placeholder="Enter NEET Mark / Rank / SML" type="number" />
+            </div>
+          </div>
+
+          <Separator />
 
           {/* Additional Filters */}
           <div>
