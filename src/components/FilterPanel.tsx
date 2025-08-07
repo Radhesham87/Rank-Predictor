@@ -18,9 +18,8 @@ export const FilterPanel = ({ isOpen, onToggle }: FilterPanelProps) => {
     "Uttar Pradesh", "West Bengal", "Gujarat", "Rajasthan", "Haryana"
   ];
 
-  const branches = [
-    "Computer Science", "Mechanical", "Electrical", "Civil", "Electronics",
-    "MBBS", "BDS", "AYUSH", "Nursing", "Pharmacy"
+  const degrees = [
+    "MBBS", "BAMS", "BHMS", "BDS"
   ];
 
   const quotas = ["General", "OBC", "SC", "ST", "EWS"];
@@ -54,12 +53,12 @@ export const FilterPanel = ({ isOpen, onToggle }: FilterPanelProps) => {
             <Label className="text-sm font-medium mb-3 block">College Type</Label>
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
-                <Checkbox id="medical" />
-                <Label htmlFor="medical" className="text-sm">Medical</Label>
+                <Checkbox id="government" />
+                <Label htmlFor="government" className="text-sm">Government</Label>
               </div>
               <div className="flex items-center space-x-2">
-                <Checkbox id="engineering" />
-                <Label htmlFor="engineering" className="text-sm">Engineering</Label>
+                <Checkbox id="private" />
+                <Label htmlFor="private" className="text-sm">Private</Label>
               </div>
             </div>
           </div>
@@ -83,17 +82,17 @@ export const FilterPanel = ({ isOpen, onToggle }: FilterPanelProps) => {
             </Select>
           </div>
 
-          {/* Branch Selection */}
+          {/* Degree Selection */}
           <div>
-            <Label className="text-sm font-medium mb-3 block">Branch/Course</Label>
+            <Label className="text-sm font-medium mb-3 block">Degree</Label>
             <Select>
               <SelectTrigger>
-                <SelectValue placeholder="Select branch" />
+                <SelectValue placeholder="Select degree" />
               </SelectTrigger>
               <SelectContent>
-                {branches.map((branch) => (
-                  <SelectItem key={branch} value={branch.toLowerCase()}>
-                    {branch}
+                {degrees.map((degree) => (
+                  <SelectItem key={degree} value={degree.toLowerCase()}>
+                    {degree}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -128,17 +127,6 @@ export const FilterPanel = ({ isOpen, onToggle }: FilterPanelProps) => {
             </div>
           </div>
 
-          {/* Fees Range */}
-          <div>
-            <Label className="text-sm font-medium mb-3 block">Annual Fees (₹)</Label>
-            <div className="space-y-2">
-              <Input placeholder="Min fees" type="number" />
-              <Input placeholder="Max fees" type="number" />
-            </div>
-          </div>
-
-          <Separator />
-
           {/* Additional Filters */}
           <div>
             <Label className="text-sm font-medium mb-3 block">Additional Filters</Label>
@@ -146,14 +134,6 @@ export const FilterPanel = ({ isOpen, onToggle }: FilterPanelProps) => {
               <div className="flex items-center space-x-2">
                 <Checkbox id="hostel" />
                 <Label htmlFor="hostel" className="text-sm">Hostel Available</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox id="government" />
-                <Label htmlFor="government" className="text-sm">Government Colleges</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox id="private" />
-                <Label htmlFor="private" className="text-sm">Private Colleges</Label>
               </div>
             </div>
           </div>
