@@ -33,7 +33,6 @@ export const FilterPanel = ({ isOpen, onToggle }: FilterPanelProps) => {
   ];
 
   const degrees = ["MBBS", "BAMS", "BHMS", "BDS"];
-
   const quotas = ["General", "OBC", "SC", "ST", "EWS"];
 
   if (!isOpen) {
@@ -126,17 +125,6 @@ export const FilterPanel = ({ isOpen, onToggle }: FilterPanelProps) => {
                 ))}
               </SelectContent>
             </Select>
-          </div>
-
-          <Separator />
-
-          {/* Rank Range */}
-          <div>
-            <Label className="text-sm font-medium mb-3 block">Rank Range</Label>
-            <div className="space-y-2">
-              <Input placeholder="Min rank" type="number" />
-              <Input placeholder="Max rank" type="number" />
-            </div>
           </div>
 
           <Separator />
