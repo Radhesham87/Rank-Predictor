@@ -3,7 +3,9 @@ import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 import { FilterPanel } from "@/components/FilterPanel";
 import { CollegeCard } from "@/components/CollegeCard";
+import { DocumentUpload } from "@/components/DocumentUpload";
 import { mockColleges } from "@/data/mockColleges";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Index = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -28,37 +30,50 @@ const Index = () => {
           </p>
         </div>
 
-        <div className="flex gap-8">
-          {/* Filter Panel */}
-          <div className="hidden lg:block w-80 shrink-0">
-            <FilterPanel isOpen={true} onToggle={() => {}} />
-          </div>
+        <Tabs defaultValue="colleges" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="colleges">Colleges</TabsTrigger>
+            <TabsTrigger value="documents">Documents</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="colleges" className="mt-8">
+            <div className="flex gap-8">
+              {/* Filter Panel */}
+              <div className="hidden lg:block w-80 shrink-0">
+                <FilterPanel isOpen={true} onToggle={() => {}} />
+              </div>
 
-          {/* Mobile Filter Button */}
-          <div className="lg:hidden">
-            <FilterPanel isOpen={isFilterOpen} onToggle={() => setIsFilterOpen(!isFilterOpen)} />
-          </div>
+              {/* Mobile Filter Button */}
+              <div className="lg:hidden">
+                <FilterPanel isOpen={isFilterOpen} onToggle={() => setIsFilterOpen(!isFilterOpen)} />
+              </div>
 
-          {/* College Grid */}
-          <div className="flex-1">
-            <div className="mb-6 flex justify-between items-center">
-              <p className="text-muted-foreground">
-                Showing <span className="font-semibold">{mockColleges.length}</span> colleges
-              </p>
-              <select className="border border-border rounded-md px-3 py-2 text-sm bg-background">
-                <option>Sort by Rank</option>
-                <option>Sort by Fees</option>
-                <option>Sort by Rating</option>
-              </select>
+              {/* College Grid */}
+              <div className="flex-1">
+                <div className="mb-6 flex justify-between items-center">
+                  <p className="text-muted-foreground">
+                    Showing <span className="font-semibold">{mockColleges.length}</span> colleges
+                  </p>
+                  <select className="border border-border rounded-md px-3 py-2 text-sm bg-background">
+                    <option>Sort by Rank</option>
+                    <option>Sort by Fees</option>
+                    <option>Sort by Rating</option>
+                  </select>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {mockColleges.map((college) => (
+                    <CollegeCard key={college.id} college={college} />
+                  ))}
+                </div>
+              </div>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {mockColleges.map((college) => (
-                <CollegeCard key={college.id} college={college} />
-              ))}
-            </div>
-          </div>
-        </div>
+          </TabsContent>
+          
+          <TabsContent value="documents" className="mt-8">
+            <DocumentUpload />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
