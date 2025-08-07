@@ -20,20 +20,11 @@ interface FilterPanelProps {
 
 export const FilterPanel = ({ isOpen, onToggle }: FilterPanelProps) => {
   const states = [
-    "Andhra Pradesh",
-    "Karnataka",
-    "Tamil Nadu",
-    "Maharashtra",
-    "Delhi",
-    "Uttar Pradesh",
-    "West Bengal",
-    "Gujarat",
-    "Rajasthan",
-    "Haryana",
+    "Andhra Pradesh", "Karnataka", "Tamil Nadu", "Maharashtra", "Delhi",
+    "Uttar Pradesh", "West Bengal", "Gujarat", "Rajasthan", "Haryana",
   ];
 
-  const degrees = ["MBBS", "BAMS", "BHMS", "BDS"];
-  const quotas = ["General", "OBC", "SC", "ST", "EWS"];
+  const categories = ["General", "OBC", "SC", "ST", "EWS"];
 
   if (!isOpen) {
     return (
@@ -59,6 +50,46 @@ export const FilterPanel = ({ isOpen, onToggle }: FilterPanelProps) => {
         </CardHeader>
 
         <CardContent className="space-y-6">
+
+          {/* NEET Input */}
+          <div>
+            <Label className="text-sm font-medium mb-3 block">NEET Input</Label>
+            <div className="space-y-2">
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select NEET Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="mark">NEET Mark</SelectItem>
+                  <SelectItem value="rank">NEET Rank</SelectItem>
+                  <SelectItem value="sml">SML</SelectItem>
+                </SelectContent>
+              </Select>
+              <Input placeholder="Enter NEET Mark / Rank / SML" type="number" />
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Category Selection */}
+          <div>
+            <Label className="text-sm font-medium mb-3 block">Category</Label>
+            <Select>
+              <SelectTrigger>
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((cat) => (
+                  <SelectItem key={cat} value={cat.toLowerCase()}>
+                    {cat}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <Separator />
+
           {/* College Type */}
           <div>
             <Label className="text-sm font-medium mb-3 block">College Type</Label>
@@ -93,61 +124,6 @@ export const FilterPanel = ({ isOpen, onToggle }: FilterPanelProps) => {
             </Select>
           </div>
 
-          {/* Degree Selection */}
-          <div>
-            <Label className="text-sm font-medium mb-3 block">Degree</Label>
-            <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="Select degree" />
-              </SelectTrigger>
-              <SelectContent>
-                {degrees.map((degree) => (
-                  <SelectItem key={degree} value={degree.toLowerCase()}>
-                    {degree}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Quota Selection */}
-          <div>
-            <Label className="text-sm font-medium mb-3 block">Quota</Label>
-            <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="Select quota" />
-              </SelectTrigger>
-              <SelectContent>
-                {quotas.map((quota) => (
-                  <SelectItem key={quota} value={quota.toLowerCase()}>
-                    {quota}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <Separator />
-
-          {/* NEET Input */}
-          <div>
-            <Label className="text-sm font-medium mb-3 block">NEET Input</Label>
-            <div className="space-y-2">
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select NEET Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="mark">NEET Mark</SelectItem>
-                  <SelectItem value="rank">NEET Rank</SelectItem>
-                  <SelectItem value="sml">SML</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Input placeholder="Enter NEET Mark / Rank / SML" type="number" />
-            </div>
-          </div>
-
           <Separator />
 
           {/* Additional Filters */}
@@ -166,6 +142,7 @@ export const FilterPanel = ({ isOpen, onToggle }: FilterPanelProps) => {
             <Button className="w-full">Apply Filters</Button>
             <Button variant="outline" className="w-full">Clear All</Button>
           </div>
+
         </CardContent>
       </Card>
     </div>
