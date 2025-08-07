@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
 import { Upload, FileText, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -17,7 +17,7 @@ interface Document {
   uploaded_at: string;
 }
 
-export const DocumentUpload = () => {
+const DocumentUpload = () => {
   const [uploading, setUploading] = useState(false);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [title, setTitle] = useState('');
@@ -37,12 +37,12 @@ export const DocumentUpload = () => {
     setUploading(true);
 
     try {
-      // Get current user
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError || !user) {
+      // Check if user is authenticated
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
         toast({
-          title: "Authentication required",
-          description: "Please log in to upload documents",
+          title: "Authentication Required",
+          description: "Please sign in to upload documents",
           variant: "destructive"
         });
         return;
@@ -56,9 +56,7 @@ export const DocumentUpload = () => {
         .from('documents')
         .upload(fileName, file);
 
-      if (uploadError) {
-        throw uploadError;
-      }
+      if (uploadError) throw uploadError;
 
       // Save document metadata to database
       const { error: dbError } = await supabase
@@ -72,9 +70,7 @@ export const DocumentUpload = () => {
           file_type: file.type
         });
 
-      if (dbError) {
-        throw dbError;
-      }
+      if (dbError) throw dbError;
 
       toast({
         title: "Success",
@@ -82,13 +78,12 @@ export const DocumentUpload = () => {
       });
 
       setTitle('');
-      event.target.value = '';
-      fetchDocuments();
-    } catch (error) {
-      console.error('Upload error:', error);
+      if (event.target) event.target.value = '';
+      loadDocuments();
+    } catch (error: any) {
       toast({
-        title: "Upload failed",
-        description: "Failed to upload document. Please try again.",
+        title: "Upload Failed",
+        description: error.message,
         variant: "destructive"
       });
     } finally {
@@ -96,20 +91,20 @@ export const DocumentUpload = () => {
     }
   };
 
-  const fetchDocuments = async () => {
+  const loadDocuments = async () => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
       const { data, error } = await supabase
         .from('documents')
         .select('*')
+        .eq('user_id', user.id)
         .order('uploaded_at', { ascending: false });
 
-      if (error) {
-        throw error;
-      }
-
+      if (error) throw error;
       setDocuments(data || []);
-    } catch (error) {
-      console.error('Fetch error:', error);
+    } catch (error: any) {
       toast({
         title: "Error",
         description: "Failed to load documents",
@@ -125,9 +120,7 @@ export const DocumentUpload = () => {
         .from('documents')
         .remove([filePath]);
 
-      if (storageError) {
-        throw storageError;
-      }
+      if (storageError) throw storageError;
 
       // Delete from database
       const { error: dbError } = await supabase
@@ -135,64 +128,25 @@ export const DocumentUpload = () => {
         .delete()
         .eq('id', documentId);
 
-      if (dbError) {
-        throw dbError;
-      }
+      if (dbError) throw dbError;
 
       toast({
         title: "Success",
         description: "Document deleted successfully"
       });
 
-      fetchDocuments();
-    } catch (error) {
-      console.error('Delete error:', error);
+      loadDocuments();
+    } catch (error: any) {
       toast({
-        title: "Error",
-        description: "Failed to delete document",
+        title: "Delete Failed",
+        description: error.message,
         variant: "destructive"
       });
     }
-  };
-
-  const downloadDocument = async (filePath: string, fileName: string) => {
-    try {
-      const { data, error } = await supabase.storage
-        .from('documents')
-        .download(filePath);
-
-      if (error) {
-        throw error;
-      }
-
-      const url = URL.createObjectURL(data);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.click();
-      URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-    } catch (error) {
-      console.error('Download error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to download document",
-        variant: "destructive"
-      });
-    }
-  };
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
   React.useEffect(() => {
-    fetchDocuments();
+    loadDocuments();
   }, []);
 
   return (
@@ -212,7 +166,6 @@ export const DocumentUpload = () => {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter document title"
-              className="mt-1"
             />
           </div>
           <div>
@@ -222,58 +175,49 @@ export const DocumentUpload = () => {
               type="file"
               onChange={handleFileUpload}
               disabled={uploading}
-              className="mt-1"
-              accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png"
+              accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg"
             />
           </div>
           {uploading && (
-            <p className="text-sm text-muted-foreground">Uploading...</p>
+            <div className="text-sm text-muted-foreground">
+              Uploading document...
+            </div>
           )}
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
-            My Documents
-          </CardTitle>
+          <CardTitle>My Documents</CardTitle>
         </CardHeader>
         <CardContent>
           {documents.length === 0 ? (
-            <p className="text-muted-foreground text-center py-4">
+            <div className="text-center py-8 text-muted-foreground">
               No documents uploaded yet
-            </p>
+            </div>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-3">
               {documents.map((doc) => (
                 <div
                   key={doc.id}
                   className="flex items-center justify-between p-3 border rounded-lg"
                 >
-                  <div className="flex-1">
-                    <h4 className="font-medium">{doc.title}</h4>
-                    <p className="text-sm text-muted-foreground">
-                      {doc.file_name} • {formatFileSize(doc.file_size)} • 
-                      {new Date(doc.uploaded_at).toLocaleDateString()}
-                    </p>
+                  <div className="flex items-center gap-3">
+                    <FileText className="h-5 w-5 text-muted-foreground" />
+                    <div>
+                      <div className="font-medium">{doc.title}</div>
+                      <div className="text-sm text-muted-foreground">
+                        {doc.file_name} • {(doc.file_size / 1024).toFixed(1)} KB
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => downloadDocument(doc.file_path, doc.file_name)}
-                    >
-                      Download
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => deleteDocument(doc.id, doc.file_path)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => deleteDocument(doc.id, doc.file_path)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
               ))}
             </div>
@@ -283,3 +227,5 @@ export const DocumentUpload = () => {
     </div>
   );
 };
+
+export default DocumentUpload;
