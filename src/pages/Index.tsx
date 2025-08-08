@@ -40,7 +40,7 @@ const Index = () => {
             <div className="flex gap-8">
               {/* Filter Panel */}
               <div className="hidden lg:block w-80 shrink-0">
-                <FilterPanel isOpen={true} onToggle={() => {}} />
+                <FilterPanel isOpen={isFilterOpen} onToggle={() => setIsFilterOpen(!isFilterOpen)} />
               </div>
 
               {/* Mobile Filter Button */}

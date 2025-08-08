@@ -8,6 +8,7 @@ import {
   Heart,
   GitCompare,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -165,8 +166,10 @@ export const CollegeCard = ({ college }: CollegeCardProps) => {
         </div>
 
         <div className="flex gap-2">
-          <Button className="flex-1" size="sm" onClick={() => toast({ title: "Details coming soon", description: `We'll show more about ${college.name} soon.` })}>
-            View Details
+          <Button asChild className="flex-1" size="sm">
+            <Link to={`/college/${college.id}`} aria-label={`View details of ${college.name}`}>
+              View Details
+            </Link>
           </Button>
           <Button asChild variant="outline" size="sm" className="flex items-center">
             <a href={college.website} target="_blank" rel="noopener noreferrer">

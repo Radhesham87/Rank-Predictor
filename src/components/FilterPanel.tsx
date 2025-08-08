@@ -12,6 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { toast } from "@/hooks/use-toast";
 
 interface FilterPanelProps {
   isOpen: boolean;
@@ -139,8 +140,8 @@ export const FilterPanel = ({ isOpen, onToggle }: FilterPanelProps) => {
 
           {/* Action Buttons */}
           <div className="space-y-2 pt-4">
-            <Button className="w-full">Apply Filters</Button>
-            <Button variant="outline" className="w-full">Clear All</Button>
+            <Button className="w-full" onClick={() => { toast({ title: "Filters applied", description: "Results updated (demo)" }); onToggle(); }}>Apply Filters</Button>
+            <Button variant="outline" className="w-full" onClick={() => { toast({ title: "Filters cleared" }); onToggle(); }}>Clear All</Button>
           </div>
 
         </CardContent>
