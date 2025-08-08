@@ -1,131 +1,122 @@
-"use client";
-
-import * as React from "react";
-import Link from "next/link";
-import { ChevronDown, LogIn, UserPlus, SortAsc } from "lucide-react";
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuList,
-} from "@/components/ui/navigation-menu";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
+import { ChevronDown } from "lucide-react";
+import * as AccordionPrimitive from "@radix-ui/react-accordion";
+import { cn } from "@/lib/utils";
+import * as XLSX from "xlsx";
 
-interface NavigationMenuProps {
-  onSortByRank?: () => void;
-}
+// Sample type
+type College = {
+  id: string;
+  name: string;
+  location: string;
+  state: string;
+  type: "Medical" | "Engineering" | "Nursing";
+  establishedYear: number;
+  rating: number;
+  fees: string;
+  branches: string[];
+  rank: number;
+};
 
-export const NavigationMenuBar: React.FC<NavigationMenuProps> = ({
-  onSortByRank,
-}) => {
-  const [sortOrder, setSortOrder] = React.useState<string>("asc");
+const Accordion = AccordionPrimitive.Root;
+const AccordionItem = AccordionPrimitive.Item;
+const AccordionTrigger = AccordionPrimitive.Trigger;
+const AccordionContent = AccordionPrimitive.Content;
 
-  const handleSortChange = (value: string) => {
-    setSortOrder(value);
-    if (onSortByRank) {
-      onSortByRank(); // Pass to parent if needed
-    }
+export default function CollegeDetails() {
+  const [colleges, setColleges] = useState<College[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortByRank, setSortByRank] = useState(false);
+
+  // Load data from Excel
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const data = new Uint8Array(e.target?.result as ArrayBuffer);
+      const workbook = XLSX.read(data, { type: "array" });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const jsonData: any[] = XLSX.utils.sheet_to_json(worksheet);
+
+      const mapped: College[] = jsonData.map((item: any, index: number) => ({
+        id: String(index + 1),
+        name: item.name,
+        location: item.location,
+        state: item.state,
+        type: item.type,
+        establishedYear: Number(item.establishedYear),
+        rating: Number(item.rating),
+        fees: item.fees,
+        branches: item.branches ? item.branches.split(",") : [],
+        rank: Number(item.rank) || index + 1,
+      }));
+
+      setColleges(mapped);
+    };
+
+    reader.readAsArrayBuffer(file);
   };
 
+  const filteredColleges = colleges
+    .filter((college) =>
+      college.name.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .sort((a, b) => (sortByRank ? a.rank - b.rank : 0));
+
   return (
-    <div className="flex justify-between items-center p-4 border-b shadow-sm bg-white">
-      <NavigationMenu>
-        <NavigationMenuList className="flex gap-6 items-center">
-          <NavigationMenuItem>
-            <Link href="/" className="text-lg font-semibold">
-              College Finder
-            </Link>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <Select value={sortOrder} onValueChange={handleSortChange}>
-              <SelectTrigger className="w-[180px]">
-                <SortAsc className="mr-2 h-4 w-4" />
-                <SelectValue placeholder="Sort by Rank" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="asc">Rank: Low to High</SelectItem>
-                <SelectItem value="desc">Rank: High to Low</SelectItem>
-              </SelectContent>
-            </Select>
-          </NavigationMenuItem>
-        </NavigationMenuList>
-      </NavigationMenu>
-
-      <div className="flex gap-4">
-        {/* Login Dialog */}
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button variant="outline">
-              <LogIn className="mr-2 h-4 w-4" />
-              Login
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Login</DialogTitle>
-            </DialogHeader>
-            <form className="space-y-4">
-              <input
-                type="email"
-                placeholder="Email"
-                className="w-full px-4 py-2 border rounded"
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                className="w-full px-4 py-2 border rounded"
-              />
-              <Button className="w-full">Submit</Button>
-            </form>
-          </DialogContent>
-        </Dialog>
-
-        {/* Sign Up Dialog */}
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button>
-              <UserPlus className="mr-2 h-4 w-4" />
-              Sign Up
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Sign Up</DialogTitle>
-            </DialogHeader>
-            <form className="space-y-4">
-              <input
-                type="text"
-                placeholder="Full Name"
-                className="w-full px-4 py-2 border rounded"
-              />
-              <input
-                type="email"
-                placeholder="Email"
-                className="w-full px-4 py-2 border rounded"
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                className="w-full px-4 py-2 border rounded"
-              />
-              <Button className="w-full">Register</Button>
-            </form>
-          </DialogContent>
-        </Dialog>
+    <div className="p-4 space-y-4">
+      <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
+        <Input
+          placeholder="Search Colleges..."
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="max-w-sm"
+        />
+        <Input type="file" accept=".xlsx" onChange={handleFileUpload} />
+        <Button onClick={() => setSortByRank(!sortByRank)}>
+          {sortByRank ? "Unsort" : "Sort by Rank"}
+        </Button>
+        <div className="flex gap-2">
+          <Button onClick={() => alert("Login logic here")}>Login</Button>
+          <Button onClick={() => alert("Signup logic here")}>Sign Up</Button>
+        </div>
       </div>
+
+      <Accordion type="multiple" className="space-y-2">
+        {filteredColleges.map((college) => (
+          <AccordionItem
+            key={college.id}
+            value={college.id}
+            className="rounded-lg border"
+          >
+            <AccordionTrigger className="flex justify-between w-full p-4 text-left">
+              <div>
+                <h3 className="text-lg font-semibold">{college.name}</h3>
+                <p className="text-sm text-gray-500">
+                  {college.location}, {college.state} – Rank: {college.rank}
+                </p>
+              </div>
+              <ChevronDown className="h-5 w-5 transition-transform" />
+            </AccordionTrigger>
+            <AccordionContent>
+              <Card className="bg-gray-50">
+                <CardContent className="p-4 text-sm space-y-2">
+                  <p><strong>Type:</strong> {college.type}</p>
+                  <p><strong>Established:</strong> {college.establishedYear}</p>
+                  <p><strong>Rating:</strong> {college.rating}</p>
+                  <p><strong>Fees:</strong> {college.fees}</p>
+                  <p><strong>Branches:</strong> {college.branches.join(", ")}</p>
+                </CardContent>
+              </Card>
+            </AccordionContent>
+          </AccordionItem>
+        ))}
+      </Accordion>
     </div>
   );
-};
+}
