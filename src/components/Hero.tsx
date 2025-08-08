@@ -22,8 +22,7 @@ export const Hero = ({ onFindColleges }: { onFindColleges?: () => void }) => {
             </span>
           </h1>
           <p className="text-xl md:text-2xl mb-8 opacity-90 max-w-3xl mx-auto">
-            Discover Medical and Engineering colleges tailored to your rank, preferences, and dreams. 
-            Make informed decisions with real-time cutoff data and comprehensive insights.
+           Unlock your future with personalized college matches based on your rank, percentile, or NEET scores — backed by real-time cutoffs and in-depth insights
           </p>
         </div>
 
@@ -35,21 +34,13 @@ export const Hero = ({ onFindColleges }: { onFindColleges?: () => void }) => {
                 Start Your College Search
               </h2>
               <p className="text-primary-foreground/80">
-                Enter your exam rank, percentile, NEET marks, AIR, or SML for personalized recommendations
+                Enter your NEET Mark for personalized recommendations
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Input 
                 placeholder="Enter NEET marks (e.g., 650)" 
-                className="h-14 text-lg bg-white/20 border-white/30 text-primary-foreground placeholder:text-primary-foreground/60"
-              />
-              <Input 
-                placeholder="Enter NEET AIR" 
-                className="h-14 text-lg bg-white/20 border-white/30 text-primary-foreground placeholder:text-primary-foreground/60"
-              />
-              <Input 
-                placeholder="Enter NEET SML" 
                 className="h-14 text-lg bg-white/20 border-white/30 text-primary-foreground placeholder:text-primary-foreground/60"
               />
               <Button
