@@ -1,29 +1,73 @@
-import { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MapPin, Star, Calendar, Phone, Globe, ArrowLeft } from "lucide-react";
-import { mockColleges } from "@/data/mockColleges";
+import axios from "axios";
+
+interface College {
+  id: string;
+  name: string;
+  location: string;
+  state: string;
+  type: string;
+  establishedYear: number;
+  rating: number;
+  fees: string;
+  branches: string[];
+  rank: number;
+  cutoffRank: number;
+  quota: string;
+  category: string;
+  hostelAvailable: boolean;
+  phone: string;
+  website: string;
+  image: string;
+}
 
 const CollegeDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const college = mockColleges.find((c) => c.id === id);
+
+  const [college, setCollege] = useState<College | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    axios.get<College[]>("http://localhost:5000/api/colleges")
+      .then((res) => {
+        const found = res.data.find((c) => c.id === id);
+        setCollege(found || null);
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+      });
+  }, [id]);
 
   useEffect(() => {
     if (college) {
       document.title = `${college.name} | College Details`;
+
       const desc = document.querySelector('meta[name="description"]') || document.createElement('meta');
       desc.setAttribute('name', 'description');
       desc.setAttribute('content', `Explore details, fees, branches, and contact info for ${college.name}.`);
       if (!desc.parentElement) document.head.appendChild(desc);
+
       const canonical = document.querySelector('link[rel="canonical"]') || document.createElement('link');
       canonical.setAttribute('rel', 'canonical');
       canonical.setAttribute('href', window.location.href);
       if (!canonical.parentElement) document.head.appendChild(canonical);
     }
   }, [college]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p>Loading college details...</p>
+      </div>
+    );
+  }
 
   if (!college) {
     return (
