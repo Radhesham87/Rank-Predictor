@@ -24,7 +24,7 @@ interface CollegeCardProps {
     fees: string;
     branches: string[];
     cutoffRank: number;
-    neetCutoffMark: number; // <-- NEW FIELD
+    neetCutoffMark?: number;
     quota: string;
     category: string;
     hostelAvailable: boolean;
@@ -97,14 +97,16 @@ export const CollegeCard = ({ college }: CollegeCardProps) => {
             <span className="font-semibold text-primary">{college.fees}</span>
           </div>
 
-          <div className="flex justify-between items-center">
-            <span className="text-sm font-medium text-muted-foreground">
-              NEET Cutoff Mark:
-            </span>
-            <Badge variant="outline" className="font-semibold">
-              {college.neetCutoffMark}
-            </Badge>
-          </div>
+          {typeof college.neetCutoffMark === 'number' && (
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium text-muted-foreground">
+                NEET Cutoff Mark:
+              </span>
+              <Badge variant="outline" className="font-semibold">
+                {college.neetCutoffMark}
+              </Badge>
+            </div>
+          )}
 
           <div className="flex justify-between items-center">
             <span className="text-sm font-medium text-muted-foreground">
