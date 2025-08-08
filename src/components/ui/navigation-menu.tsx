@@ -1,72 +1,114 @@
-"use client";
+"use client"
 
-import * as React from "react";
-import Link from "next/link";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
-import { Input } from "@/components/ui/input";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import * as React from "react"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Menu } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog"
 
-interface NavigationProps {
-  onSortChange?: (sortType: string) => void;
+interface NavigationMenuProps {
+  onFindColleges?: () => void;
+  onSortByRank?: () => void;
 }
 
-export function NavigationMenuDemo({ onSortChange }: NavigationProps) {
-  const [searchValue, setSearchValue] = React.useState("");
+export function NavigationMenu({ onFindColleges, onSortByRank }: NavigationMenuProps) {
+  const [search, setSearch] = React.useState("");
+  const [showLogin, setShowLogin] = React.useState(false);
+  const [showSignup, setShowSignup] = React.useState(false);
 
-  const handleSortChange = (value: string) => {
-    if (onSortChange) {
-      onSortChange(value);
-    }
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+  };
+
+  const handleSortClick = () => {
+    if (onSortByRank) onSortByRank();
   };
 
   return (
-    <div className="flex justify-between items-center w-full px-6 py-4 border-b bg-white shadow-sm">
-      {/* Logo or Brand */}
-      <Link href="/" className="text-2xl font-bold text-blue-600">
-        CollegeFinder
-      </Link>
+    <header className="sticky top-0 z-50 w-full border-b bg-white">
+      <div className="container flex h-16 items-center justify-between">
+        <Link href="/" className="text-xl font-bold">CollegeFinder</Link>
 
-      {/* Search Bar */}
-      <div className="flex-1 mx-4">
-        <Input
-          placeholder="Search colleges..."
-          value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
-          className="w-full"
-        />
-      </div>
+        <nav className="hidden md:flex items-center space-x-4">
+          <Input
+            type="text"
+            placeholder="Search for colleges..."
+            value={search}
+            onChange={handleSearch}
+            className="w-64"
+          />
+          <Button onClick={onFindColleges}>Find Colleges</Button>
+          <Button variant="outline" onClick={handleSortClick}>Sort by Rank</Button>
 
-      {/* Sort Dropdown */}
-      <div className="mx-4">
-        <Select onValueChange={handleSortChange}>
-          <SelectTrigger className="w-[150px]">
-            <SelectValue placeholder="Sort by" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="rank">Rank</SelectItem>
-            <SelectItem value="rating">Rating</SelectItem>
-            <SelectItem value="fees">Fees</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+          {/* LOGIN Modal */}
+          <AlertDialog open={showLogin} onOpenChange={setShowLogin}>
+            <AlertDialogTrigger asChild>
+              <Button variant="outline">Login</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Login</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This is a placeholder login form.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <Input placeholder="Email" className="mb-2" />
+              <Input placeholder="Password" type="password" />
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction>Login</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
 
-      {/* Auth Buttons */}
-      <div className="flex gap-2">
-        <Button variant="outline" onClick={() => alert("Login clicked!")}>
-          Login
-        </Button>
-        <Button onClick={() => alert("Sign up clicked!")}>Sign Up</Button>
+          {/* SIGNUP Modal */}
+          <AlertDialog open={showSignup} onOpenChange={setShowSignup}>
+            <AlertDialogTrigger asChild>
+              <Button>Sign up</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Sign Up</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This is a placeholder sign up form.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <Input placeholder="Email" className="mb-2" />
+              <Input placeholder="Password" type="password" className="mb-2" />
+              <Input placeholder="Confirm Password" type="password" />
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction>Sign Up</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </nav>
+
+        {/* Mobile Menu */}
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="md:hidden">
+              <Menu />
+            </Button>
+          </SheetTrigger>
+          <SheetContent>
+            <div className="space-y-4 p-4">
+              <Input
+                type="text"
+                placeholder="Search for colleges..."
+                value={search}
+                onChange={handleSearch}
+              />
+              <Button onClick={onFindColleges}>Find Colleges</Button>
+              <Button variant="outline" onClick={handleSortClick}>Sort by Rank</Button>
+              <Button variant="outline" onClick={() => setShowLogin(true)}>Login</Button>
+              <Button onClick={() => setShowSignup(true)}>Sign up</Button>
+            </div>
+          </SheetContent>
+        </Sheet>
       </div>
-    </div>
+    </header>
   );
 }
