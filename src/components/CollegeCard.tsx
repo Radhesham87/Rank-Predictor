@@ -11,6 +11,7 @@ import {
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "@/hooks/use-toast";
 
 interface CollegeCardProps {
   college: {
@@ -49,6 +50,8 @@ export const CollegeCard = ({ college }: CollegeCardProps) => {
               size="sm"
               variant="secondary"
               className="bg-white/90 hover:bg-white"
+              onClick={() => toast({ title: "Added to favorites", description: `${college.name} saved (feature coming soon)` })}
+              aria-label="Add to favorites"
             >
               <Heart className="w-4 h-4" />
             </Button>
@@ -56,6 +59,8 @@ export const CollegeCard = ({ college }: CollegeCardProps) => {
               size="sm"
               variant="secondary"
               className="bg-white/90 hover:bg-white"
+              onClick={() => toast({ title: "Added to compare", description: `${college.name} added to compare list (coming soon)` })}
+              aria-label="Add to compare"
             >
               <GitCompare className="w-4 h-4" />
             </Button>
@@ -160,16 +165,20 @@ export const CollegeCard = ({ college }: CollegeCardProps) => {
         </div>
 
         <div className="flex gap-2">
-          <Button className="flex-1" size="sm">
+          <Button className="flex-1" size="sm" onClick={() => toast({ title: "Details coming soon", description: `We'll show more about ${college.name} soon.` })}>
             View Details
           </Button>
-          <Button variant="outline" size="sm" className="flex items-center">
-            <Globe className="w-4 h-4 mr-1" />
-            Visit
+          <Button asChild variant="outline" size="sm" className="flex items-center">
+            <a href={college.website} target="_blank" rel="noopener noreferrer">
+              <Globe className="w-4 h-4 mr-1" />
+              Visit
+            </a>
           </Button>
-          <Button variant="outline" size="sm" className="flex items-center">
-            <Phone className="w-4 h-4 mr-1" />
-            Call
+          <Button asChild variant="outline" size="sm" className="flex items-center">
+            <a href={`tel:${college.phone}`}>
+              <Phone className="w-4 h-4 mr-1" />
+              Call
+            </a>
           </Button>
         </div>
       </CardContent>

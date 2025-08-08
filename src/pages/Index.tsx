@@ -15,7 +15,7 @@ const Index = () => {
       <Navbar />
       
       {/* Hero Section */}
-      <Hero />
+      <Hero onFindColleges={() => document.getElementById('colleges')?.scrollIntoView({ behavior: 'smooth' })} />
       
       {/* Main Content */}
       <div className="container mx-auto px-4 py-16" id="colleges">

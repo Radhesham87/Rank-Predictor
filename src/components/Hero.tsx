@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 
-export const Hero = () => {
+export const Hero = ({ onFindColleges }: { onFindColleges?: () => void }) => {
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-primary via-primary-light to-accent overflow-hidden">
       {/* Background decorative elements */}
@@ -51,7 +51,7 @@ export const Hero = () => {
                   className="h-14 text-lg bg-white/20 border-white/30 text-primary-foreground placeholder:text-primary-foreground/60"
                 />
               </div>
-              <Button size="lg" className="h-14 px-8 bg-secondary hover:bg-secondary-light text-secondary-foreground font-semibold">
+              <Button type="button" onClick={() => { onFindColleges ? onFindColleges() : document.getElementById('colleges')?.scrollIntoView({ behavior: 'smooth' }); }} size="lg" className="h-14 px-8 bg-secondary hover:bg-secondary-light text-secondary-foreground font-semibold">
                 <Search className="mr-2" />
                 Find Colleges
               </Button>
