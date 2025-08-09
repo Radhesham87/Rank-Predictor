@@ -8,9 +8,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 
 const Auth = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
+  const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -28,34 +29,48 @@ const Auth = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  const handleSignIn = async () => {
+  const handleSendOtp = async () => {
+    if (!phone || phone.length < 10) {
+      toast({ title: "Invalid phone number", description: "Please enter a valid 10-digit phone number", variant: "destructive" });
+      return;
+    }
+    
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithOtp({ 
+      phone: `+91${phone}`,
+      options: {
+        channel: 'sms'
+      }
+    });
+    
     setLoading(false);
     if (error) {
-      toast({ title: "Sign in failed", description: error.message, variant: "destructive" });
+      toast({ title: "Failed to send OTP", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Welcome back", description: "Signed in successfully" });
-      navigate("/", { replace: true });
+      setOtpSent(true);
+      toast({ title: "OTP sent", description: "Please check your phone for the verification code" });
     }
   };
 
-  const handleSignUp = async () => {
+  const handleVerifyOtp = async () => {
+    if (!otp || otp.length !== 6) {
+      toast({ title: "Invalid OTP", description: "Please enter the 6-digit OTP", variant: "destructive" });
+      return;
+    }
+    
     setLoading(true);
-    const redirectUrl = `${window.location.origin}/`;
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { emailRedirectTo: redirectUrl },
+    const { error } = await supabase.auth.verifyOtp({
+      phone: `+91${phone}`,
+      token: otp,
+      type: 'sms'
     });
+    
     setLoading(false);
     if (error) {
-      toast({ title: "Sign up failed", description: error.message, variant: "destructive" });
+      toast({ title: "OTP verification failed", description: error.message, variant: "destructive" });
     } else {
-      toast({
-        title: "Check your email",
-        description: "We sent a confirmation link. After confirming, you'll be redirected.",
-      });
+      toast({ title: "Welcome!", description: "Successfully logged in" });
+      navigate("/", { replace: true });
     }
   };
 
@@ -64,41 +79,62 @@ const Auth = () => {
       <div className="container mx-auto px-4 py-16 max-w-md">
         <Card>
           <CardHeader>
-            <CardTitle>Login or Create an Account</CardTitle>
+            <CardTitle className="text-center">Medical College Finder</CardTitle>
+            <p className="text-center text-muted-foreground">Login with Mobile Number</p>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="signin" className="w-full">
-              <TabsList className="w-full grid grid-cols-2">
-                <TabsTrigger value="signin">Sign In</TabsTrigger>
-                <TabsTrigger value="signup">Sign Up</TabsTrigger>
-              </TabsList>
-              <TabsContent value="signin" className="space-y-4 mt-6">
+            {!otpSent ? (
+              <div className="space-y-4">
                 <div>
-                  <label htmlFor="email" className="text-sm">Email</label>
-                  <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+                  <label htmlFor="phone" className="text-sm font-medium">Mobile Number</label>
+                  <div className="flex mt-1">
+                    <span className="inline-flex items-center px-3 border border-r-0 border-border rounded-l-md bg-muted text-sm">
+                      +91
+                    </span>
+                    <Input 
+                      id="phone" 
+                      type="tel" 
+                      value={phone} 
+                      onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))} 
+                      placeholder="Enter 10-digit mobile number"
+                      className="rounded-l-none"
+                      maxLength={10}
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label htmlFor="password" className="text-sm">Password</label>
-                  <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
-                </div>
-                <Button className="w-full" onClick={handleSignIn} disabled={loading}>
-                  {loading ? "Please wait..." : "Sign In"}
+                <Button className="w-full" onClick={handleSendOtp} disabled={loading}>
+                  {loading ? "Sending OTP..." : "Send OTP"}
                 </Button>
-              </TabsContent>
-              <TabsContent value="signup" className="space-y-4 mt-6">
+              </div>
+            ) : (
+              <div className="space-y-4">
                 <div>
-                  <label htmlFor="email2" className="text-sm">Email</label>
-                  <Input id="email2" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+                  <label htmlFor="otp" className="text-sm font-medium">Enter OTP</label>
+                  <Input 
+                    id="otp" 
+                    type="text" 
+                    value={otp} 
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))} 
+                    placeholder="Enter 6-digit OTP"
+                    maxLength={6}
+                    className="text-center text-lg tracking-widest"
+                  />
+                  <p className="text-sm text-muted-foreground mt-1">
+                    OTP sent to +91{phone}
+                  </p>
                 </div>
-                <div>
-                  <label htmlFor="password2" className="text-sm">Password</label>
-                  <Input id="password2" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Create a password" />
-                </div>
-                <Button className="w-full" variant="secondary" onClick={handleSignUp} disabled={loading}>
-                  {loading ? "Please wait..." : "Create Account"}
+                <Button className="w-full" onClick={handleVerifyOtp} disabled={loading}>
+                  {loading ? "Verifying..." : "Verify OTP"}
                 </Button>
-              </TabsContent>
-            </Tabs>
+                <Button 
+                  variant="ghost" 
+                  className="w-full" 
+                  onClick={() => { setOtpSent(false); setOtp(""); }}
+                >
+                  Change Phone Number
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

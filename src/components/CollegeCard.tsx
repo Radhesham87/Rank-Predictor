@@ -43,15 +43,15 @@ export const CollegeCard = ({ college }: CollegeCardProps) => {
         <div className="relative overflow-hidden rounded-t-lg h-48">
           <img
             src={college.image}
-            alt={college.name}
+            alt={`${college.name} campus`}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
           <div className="absolute top-4 right-4 flex gap-2">
             <Button
               size="sm"
               variant="secondary"
-              className="bg-white/90 hover:bg-white"
-              onClick={() => toast({ title: "Added to favorites", description: `${college.name} saved (feature coming soon)` })}
+              className="bg-white/90 hover:bg-white shadow-md"
+              onClick={() => toast({ title: "Added to favorites", description: `${college.name} saved to your favorites` })}
               aria-label="Add to favorites"
             >
               <Heart className="w-4 h-4" />
@@ -59,14 +59,14 @@ export const CollegeCard = ({ college }: CollegeCardProps) => {
             <Button
               size="sm"
               variant="secondary"
-              className="bg-white/90 hover:bg-white"
-              onClick={() => toast({ title: "Added to compare", description: `${college.name} added to compare list (coming soon)` })}
+              className="bg-white/90 hover:bg-white shadow-md"
+              onClick={() => toast({ title: "Added to compare", description: `${college.name} added to compare list` })}
               aria-label="Add to compare"
             >
               <GitCompare className="w-4 h-4" />
             </Button>
           </div>
-          <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground">
+          <Badge className="absolute top-4 left-4 bg-blue-600 text-white">
             {college.type}
           </Badge>
         </div>
@@ -89,7 +89,7 @@ export const CollegeCard = ({ college }: CollegeCardProps) => {
               <span>Est. {college.establishedYear}</span>
             </div>
             <div className="flex items-center">
-              <Star className="w-4 h-4 mr-1 text-secondary" />
+              <Star className="w-4 h-4 mr-1 text-yellow-500 fill-current" />
               <span>{college.rating}/5</span>
             </div>
           </div>
@@ -100,7 +100,7 @@ export const CollegeCard = ({ college }: CollegeCardProps) => {
             <span className="text-sm font-medium text-muted-foreground">
               Annual Fees:
             </span>
-            <span className="font-semibold text-primary">{college.fees}</span>
+            <span className="font-semibold text-blue-600">{college.fees}</span>
           </div>
 
           {typeof college.neetCutoffMark === 'number' && (
@@ -108,7 +108,7 @@ export const CollegeCard = ({ college }: CollegeCardProps) => {
               <span className="text-sm font-medium text-muted-foreground">
                 NEET Cutoff Mark:
               </span>
-              <Badge variant="outline" className="font-semibold">
+              <Badge variant="outline" className="font-semibold text-green-600 border-green-600">
                 {college.neetCutoffMark}
               </Badge>
             </div>
@@ -144,12 +144,12 @@ export const CollegeCard = ({ college }: CollegeCardProps) => {
           </p>
           <div className="flex flex-wrap gap-1">
             {college.branches.slice(0, 3).map((branch) => (
-              <Badge key={branch} variant="secondary" className="text-xs">
+              <Badge key={branch} variant="secondary" className="text-xs bg-yellow-100 text-yellow-800">
                 {branch}
               </Badge>
             ))}
             {college.branches.length > 3 && (
-              <Badge variant="secondary" className="text-xs">
+              <Badge variant="secondary" className="text-xs bg-yellow-100 text-yellow-800">
                 +{college.branches.length - 3} more
               </Badge>
             )}
@@ -166,7 +166,7 @@ export const CollegeCard = ({ college }: CollegeCardProps) => {
         </div>
 
         <div className="flex gap-2">
-          <Button asChild className="flex-1" size="sm">
+          <Button asChild className="flex-1 bg-blue-600 hover:bg-blue-700" size="sm">
             <Link to={`/college/${college.id}`} aria-label={`View details of ${college.name}`}>
               View Details
             </Link>

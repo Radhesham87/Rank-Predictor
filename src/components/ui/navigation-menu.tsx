@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import Link from "next/link"
+import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Menu } from "lucide-react"
@@ -29,7 +29,7 @@ export function NavigationMenu({ onFindColleges, onSortByRank }: NavigationMenuP
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white">
       <div className="container flex h-16 items-center justify-between">
-        <Link href="/" className="text-xl font-bold">CollegeFinder</Link>
+        <Link to="/" className="text-xl font-bold">CollegeFinder</Link>
 
         <nav className="hidden md:flex items-center space-x-4">
           <Input

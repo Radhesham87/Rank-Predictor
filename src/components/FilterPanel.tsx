@@ -54,19 +54,18 @@ export const FilterPanel = ({ isOpen, onToggle }: FilterPanelProps) => {
 
           {/* NEET Input */}
           <div>
-            <Label className="text-sm font-medium mb-3 block">NEET Input</Label>
+            <Label className="text-sm font-medium mb-3 block">NEET Score</Label>
             <div className="space-y-2">
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select NEET Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="mark">NEET Mark</SelectItem>
-                  <SelectItem value="rank">NEET Rank</SelectItem>
-                  <SelectItem value="sml">SML</SelectItem>
-                </SelectContent>
-              </Select>
-              <Input placeholder="Enter NEET Mark / Rank / SML" type="number" />
+              <Input 
+                placeholder="Enter your NEET Score" 
+                type="number" 
+                className="text-center"
+                max="720"
+                min="0"
+              />
+              <p className="text-xs text-muted-foreground">
+                Enter your NEET score (0-720) to find matching colleges
+              </p>
             </div>
           </div>
 

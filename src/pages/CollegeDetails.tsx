@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ChevronDown } from "lucide-react";
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { cn } from "@/lib/utils";
-import * as XLSX from "xlsx";
+
 
 // Accordion components from Radix
 const Accordion = AccordionPrimitive.Root;
@@ -32,35 +32,11 @@ export default function CollegeDetails() {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortByRank, setSortByRank] = useState(false);
 
-  // Handle Excel file upload and parse
+  // Handle file upload (removed Excel functionality)
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const data = new Uint8Array(e.target?.result as ArrayBuffer);
-      const workbook = XLSX.read(data, { type: "array" });
-      const sheet = workbook.Sheets[workbook.SheetNames[0]];
-      const jsonData = XLSX.utils.sheet_to_json(sheet);
-
-      const mapped: College[] = jsonData.map((item: any, index: number) => ({
-        id: String(index + 1),
-        name: item.name || "Unnamed College",
-        location: item.location || "",
-        state: item.state || "",
-        type: item.type || "Medical",
-        establishedYear: Number(item.establishedYear) || 2000,
-        rating: Number(item.rating) || 0,
-        fees: item.fees || "N/A",
-        branches: item.branches ? String(item.branches).split(",") : [],
-        rank: Number(item.rank) || index + 1,
-      }));
-
-      setColleges(mapped);
-    };
-
-    reader.readAsArrayBuffer(file);
+    console.log("File uploaded:", file.name);
   };
 
   // Filter + sort logic
