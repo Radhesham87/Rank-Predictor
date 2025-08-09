@@ -7,10 +7,10 @@ import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { cn } from "@/lib/utils";
 import * as XLSX from "xlsx";
 
-// Accordion shortcuts
+// Accordion components from Radix
 const Accordion = AccordionPrimitive.Root;
 const AccordionItem = AccordionPrimitive.Item;
-const AccordionTrigger = AccordionPrimitive.Header;
+const AccordionTrigger = AccordionPrimitive.Trigger;
 const AccordionContent = AccordionPrimitive.Content;
 
 // College type
@@ -32,7 +32,7 @@ export default function CollegeDetails() {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortByRank, setSortByRank] = useState(false);
 
-  // Handle Excel upload
+  // Handle Excel file upload and parse
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -63,7 +63,7 @@ export default function CollegeDetails() {
     reader.readAsArrayBuffer(file);
   };
 
-  // Filter + sort
+  // Filter + sort logic
   const filteredColleges = [...colleges]
     .filter((college) =>
       college.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -72,7 +72,7 @@ export default function CollegeDetails() {
 
   return (
     <div className="p-4 space-y-4">
-      {/* Top bar */}
+      {/* Top bar with search, upload, and sort */}
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
         <Input
           placeholder="Search Colleges..."
@@ -93,7 +93,11 @@ export default function CollegeDetails() {
             value={college.id}
             className="border rounded-lg"
           >
-            <AccordionTrigger className="w-full flex justify-between p-4 text-left font-semibold">
+            <AccordionTrigger
+              className={cn(
+                "w-full flex justify-between items-center p-4 text-left font-semibold"
+              )}
+            >
               <div>
                 <h3 className="text-lg">{college.name}</h3>
                 <p className="text-sm text-gray-500">
@@ -106,11 +110,21 @@ export default function CollegeDetails() {
             <AccordionContent>
               <Card className="bg-muted">
                 <CardContent className="p-4 space-y-1 text-sm">
-                  <p><strong>Type:</strong> {college.type}</p>
-                  <p><strong>Established:</strong> {college.establishedYear}</p>
-                  <p><strong>Rating:</strong> {college.rating}</p>
-                  <p><strong>Fees:</strong> {college.fees}</p>
-                  <p><strong>Branches:</strong> {college.branches.join(", ")}</p>
+                  <p>
+                    <strong>Type:</strong> {college.type}
+                  </p>
+                  <p>
+                    <strong>Established:</strong> {college.establishedYear}
+                  </p>
+                  <p>
+                    <strong>Rating:</strong> {college.rating}
+                  </p>
+                  <p>
+                    <strong>Fees:</strong> {college.fees}
+                  </p>
+                  <p>
+                    <strong>Branches:</strong> {college.branches.join(", ")}
+                  </p>
                 </CardContent>
               </Card>
             </AccordionContent>
