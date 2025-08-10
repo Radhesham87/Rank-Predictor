@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 
 const Auth = () => {
-  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
@@ -31,8 +31,8 @@ const Auth = () => {
   }, [navigate]);
 
   const handleSendOtp = async () => {
-    if (!phone || phone.length < 10) {
-      toast({ title: "Invalid phone number", description: "Please enter a valid 10-digit phone number", variant: "destructive" });
+    if (!email || !email.includes('@')) {
+      toast({ title: "Invalid email", description: "Please enter a valid email address", variant: "destructive" });
       return;
     }
     if (!username || username.trim().length < 2) {
@@ -41,10 +41,12 @@ const Auth = () => {
     }
     
     setLoading(true);
+    const redirectUrl = `${window.location.origin}/`;
+    
     const { error } = await supabase.auth.signInWithOtp({ 
-      phone: `+91${phone}`,
+      email: email,
       options: {
-        channel: 'sms'
+        emailRedirectTo: redirectUrl
       }
     });
     
@@ -53,7 +55,7 @@ const Auth = () => {
       toast({ title: "Failed to send OTP", description: error.message, variant: "destructive" });
     } else {
       setOtpSent(true);
-      toast({ title: "OTP sent", description: "Please check your phone for the verification code" });
+      toast({ title: "OTP sent", description: "Please check your email for the verification code" });
     }
   };
 
@@ -65,9 +67,9 @@ const Auth = () => {
     
     setLoading(true);
     const { error } = await supabase.auth.verifyOtp({
-      phone: `+91${phone}`,
+      email: email,
       token: otp,
-      type: 'sms'
+      type: 'email'
     });
     
     setLoading(false);
@@ -85,7 +87,7 @@ const Auth = () => {
         <Card>
           <CardHeader>
             <CardTitle className="text-center">Medical College Finder</CardTitle>
-            <p className="text-center text-muted-foreground">Login with Mobile Number</p>
+            <p className="text-center text-muted-foreground">Login with Email Address</p>
           </CardHeader>
           <CardContent>
             {!otpSent ? (
@@ -102,21 +104,15 @@ const Auth = () => {
                   />
                 </div>
                 <div>
-                  <label htmlFor="phone" className="text-sm font-medium">Mobile Number</label>
-                  <div className="flex mt-1">
-                    <span className="inline-flex items-center px-3 border border-r-0 border-border rounded-l-md bg-muted text-sm">
-                      +91
-                    </span>
-                    <Input 
-                      id="phone" 
-                      type="tel" 
-                      value={phone} 
-                      onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))} 
-                      placeholder="Enter 10-digit mobile number"
-                      className="rounded-l-none"
-                      maxLength={10}
-                    />
-                  </div>
+                  <label htmlFor="email" className="text-sm font-medium">Email Address</label>
+                  <Input 
+                    id="email" 
+                    type="email" 
+                    value={email} 
+                    onChange={(e) => setEmail(e.target.value)} 
+                    placeholder="Enter your email address"
+                    className="mt-1"
+                  />
                 </div>
                 <Button className="w-full" onClick={handleSendOtp} disabled={loading}>
                   {loading ? "Sending OTP..." : "Send OTP"}
@@ -136,7 +132,7 @@ const Auth = () => {
                     className="text-center text-lg tracking-widest"
                   />
                   <p className="text-sm text-muted-foreground mt-1">
-                    OTP sent to +91{phone}
+                    OTP sent to {email}
                   </p>
                 </div>
                 <Button className="w-full" onClick={handleVerifyOtp} disabled={loading}>
