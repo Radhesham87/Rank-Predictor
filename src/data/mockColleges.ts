@@ -15,7 +15,9 @@ export const mockColleges = [
     hostelAvailable: true,
     website: "https://aiims.edu",
     phone: "+91-11-26588500",
-    image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?auto=format&fit=crop&w=800&q=80"
+    image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?auto=format&fit=crop&w=800&q=80",
+    lat: 28.6139,
+    lng: 77.2090
   },
   {
     id: "2",

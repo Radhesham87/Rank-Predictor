@@ -4,6 +4,7 @@ import { Hero } from "@/components/Hero";
 import { FilterPanel } from "@/components/FilterPanel";
 import { CollegeCard } from "@/components/CollegeCard";
 import DocumentUpload from "@/components/DocumentUpload";
+import CollegeMap from "@/components/CollegeMap";
 import { mockColleges } from "@/data/mockColleges";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -31,8 +32,9 @@ const Index = () => {
         </div>
 
         <Tabs defaultValue="colleges" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="colleges">Colleges</TabsTrigger>
+            <TabsTrigger value="map">College Map</TabsTrigger>
             <TabsTrigger value="documents">Documents</TabsTrigger>
           </TabsList>
           
@@ -67,6 +69,13 @@ const Index = () => {
                   ))}
                 </div>
               </div>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="map" className="mt-8">
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-center">College Locations</h3>
+              <CollegeMap colleges={mockColleges} />
             </div>
           </TabsContent>
           

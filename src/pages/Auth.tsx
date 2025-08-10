@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const Auth = () => {
   const [phone, setPhone] = useState("");
+  const [username, setUsername] = useState("");
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
@@ -32,6 +33,10 @@ const Auth = () => {
   const handleSendOtp = async () => {
     if (!phone || phone.length < 10) {
       toast({ title: "Invalid phone number", description: "Please enter a valid 10-digit phone number", variant: "destructive" });
+      return;
+    }
+    if (!username || username.trim().length < 2) {
+      toast({ title: "Invalid username", description: "Please enter a valid username (at least 2 characters)", variant: "destructive" });
       return;
     }
     
@@ -86,6 +91,17 @@ const Auth = () => {
             {!otpSent ? (
               <div className="space-y-4">
                 <div>
+                  <label htmlFor="username" className="text-sm font-medium">Full Name</label>
+                  <Input 
+                    id="username" 
+                    type="text" 
+                    value={username} 
+                    onChange={(e) => setUsername(e.target.value)} 
+                    placeholder="Enter your full name"
+                    className="mt-1"
+                  />
+                </div>
+                <div>
                   <label htmlFor="phone" className="text-sm font-medium">Mobile Number</label>
                   <div className="flex mt-1">
                     <span className="inline-flex items-center px-3 border border-r-0 border-border rounded-l-md bg-muted text-sm">
@@ -129,9 +145,9 @@ const Auth = () => {
                 <Button 
                   variant="ghost" 
                   className="w-full" 
-                  onClick={() => { setOtpSent(false); setOtp(""); }}
+                  onClick={() => { setOtpSent(false); setOtp(""); setUsername(""); }}
                 >
-                  Change Phone Number
+                  Change Details
                 </Button>
               </div>
             )}
