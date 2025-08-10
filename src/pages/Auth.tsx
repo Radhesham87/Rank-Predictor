@@ -9,10 +9,10 @@ import { useToast } from "@/hooks/use-toast";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
-  const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
-  const [otpSent, setOtpSent] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -30,55 +30,58 @@ const Auth = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  const handleSendOtp = async () => {
+  const handleAuth = async () => {
     if (!email || !email.includes('@')) {
       toast({ title: "Invalid email", description: "Please enter a valid email address", variant: "destructive" });
       return;
     }
-    if (!username || username.trim().length < 2) {
+    if (!password || password.length < 6) {
+      toast({ title: "Invalid password", description: "Password must be at least 6 characters", variant: "destructive" });
+      return;
+    }
+    if (isSignUp && (!username || username.trim().length < 2)) {
       toast({ title: "Invalid username", description: "Please enter a valid username (at least 2 characters)", variant: "destructive" });
       return;
     }
     
     setLoading(true);
-    const redirectUrl = `${window.location.origin}/`;
     
-    const { error } = await supabase.auth.signInWithOtp({ 
-      email: email,
-      options: {
-        emailRedirectTo: redirectUrl
+    try {
+      if (isSignUp) {
+        // Sign up new user
+        const { error } = await supabase.auth.signUp({
+          email: email,
+          password: password,
+          options: {
+            data: {
+              full_name: username
+            }
+          }
+        });
+        
+        if (error) throw error;
+        toast({ title: "Account created!", description: "You can now log in with your credentials" });
+        setIsSignUp(false);
+      } else {
+        // Sign in existing user
+        const { error } = await supabase.auth.signInWithPassword({
+          email: email,
+          password: password
+        });
+        
+        if (error) throw error;
+        toast({ title: "Welcome back!", description: "Successfully logged in" });
+        navigate("/", { replace: true });
       }
-    });
+    } catch (error: any) {
+      toast({ 
+        title: isSignUp ? "Sign up failed" : "Login failed", 
+        description: error.message, 
+        variant: "destructive" 
+      });
+    }
     
     setLoading(false);
-    if (error) {
-      toast({ title: "Failed to send OTP", description: error.message, variant: "destructive" });
-    } else {
-      setOtpSent(true);
-      toast({ title: "OTP sent", description: "Please check your email for the verification code" });
-    }
-  };
-
-  const handleVerifyOtp = async () => {
-    if (!otp || otp.length !== 6) {
-      toast({ title: "Invalid OTP", description: "Please enter the 6-digit OTP", variant: "destructive" });
-      return;
-    }
-    
-    setLoading(true);
-    const { error } = await supabase.auth.verifyOtp({
-      email: email,
-      token: otp,
-      type: 'email'
-    });
-    
-    setLoading(false);
-    if (error) {
-      toast({ title: "OTP verification failed", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "Welcome!", description: "Successfully logged in" });
-      navigate("/", { replace: true });
-    }
   };
 
   return (
@@ -87,11 +90,11 @@ const Auth = () => {
         <Card>
           <CardHeader>
             <CardTitle className="text-center">Medical College Finder</CardTitle>
-            <p className="text-center text-muted-foreground">Login with Email Address</p>
+            <p className="text-center text-muted-foreground">{isSignUp ? 'Create Account' : 'Welcome Back'}</p>
           </CardHeader>
           <CardContent>
-            {!otpSent ? (
-              <div className="space-y-4">
+            <div className="space-y-4">
+              {isSignUp && (
                 <div>
                   <label htmlFor="username" className="text-sm font-medium">Full Name</label>
                   <Input 
@@ -103,50 +106,40 @@ const Auth = () => {
                     className="mt-1"
                   />
                 </div>
-                <div>
-                  <label htmlFor="email" className="text-sm font-medium">Email Address</label>
-                  <Input 
-                    id="email" 
-                    type="email" 
-                    value={email} 
-                    onChange={(e) => setEmail(e.target.value)} 
-                    placeholder="Enter your email address"
-                    className="mt-1"
-                  />
-                </div>
-                <Button className="w-full" onClick={handleSendOtp} disabled={loading}>
-                  {loading ? "Sending OTP..." : "Send OTP"}
-                </Button>
+              )}
+              <div>
+                <label htmlFor="email" className="text-sm font-medium">Email Address</label>
+                <Input 
+                  id="email" 
+                  type="email" 
+                  value={email} 
+                  onChange={(e) => setEmail(e.target.value)} 
+                  placeholder="Enter your email address"
+                  className="mt-1"
+                />
               </div>
-            ) : (
-              <div className="space-y-4">
-                <div>
-                  <label htmlFor="otp" className="text-sm font-medium">Enter OTP</label>
-                  <Input 
-                    id="otp" 
-                    type="text" 
-                    value={otp} 
-                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))} 
-                    placeholder="Enter 6-digit OTP"
-                    maxLength={6}
-                    className="text-center text-lg tracking-widest"
-                  />
-                  <p className="text-sm text-muted-foreground mt-1">
-                    OTP sent to {email}
-                  </p>
-                </div>
-                <Button className="w-full" onClick={handleVerifyOtp} disabled={loading}>
-                  {loading ? "Verifying..." : "Verify OTP"}
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  className="w-full" 
-                  onClick={() => { setOtpSent(false); setOtp(""); setUsername(""); }}
-                >
-                  Change Details
-                </Button>
+              <div>
+                <label htmlFor="password" className="text-sm font-medium">Password</label>
+                <Input 
+                  id="password" 
+                  type="password" 
+                  value={password} 
+                  onChange={(e) => setPassword(e.target.value)} 
+                  placeholder="Enter your password"
+                  className="mt-1"
+                />
               </div>
-            )}
+              <Button className="w-full" onClick={handleAuth} disabled={loading}>
+                {loading ? (isSignUp ? "Creating Account..." : "Signing In...") : (isSignUp ? "Create Account" : "Sign In")}
+              </Button>
+              <Button 
+                variant="ghost" 
+                className="w-full" 
+                onClick={() => setIsSignUp(!isSignUp)}
+              >
+                {isSignUp ? "Already have an account? Sign In" : "Don't have an account? Sign Up"}
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
